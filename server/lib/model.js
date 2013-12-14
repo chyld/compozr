@@ -3,16 +3,15 @@ var db = global.db;
 
 var Model = function(table, data){
   var generateUpsertSql = function(){
-    var id;
+    var id = data.id;
     var sql = {};
     sql.allCols = db.schemas[table];
     sql.usrCols = [];
     sql.usrVals = [];
 
-    if(data.id){
-      id = data.id;
-      delete data.id;
-    }
+    delete data.id;
+    delete data.created_at;
+    delete data.updated_at;
 
     for(var property in data){
       var isColumn = __.any(sql.allCols, function(column){return column === property;});
@@ -22,7 +21,13 @@ var Model = function(table, data){
       }
     }
 
-    var params  = __.map(sql.usrVals, function(v, i){return '$' +        (i+1);});
+
+console.log('---------QUERY----------');
+console.log('---------QUERY----------');
+console.log('---------QUERY----------');
+
+
+    var params  = __.map(sql.usrVals, function(v, i){return '$' + (i+1);});
     var allCols = sql.allCols.join(',');
 
     if(id){
@@ -58,11 +63,10 @@ var Model = function(table, data){
 // ------------------------------------------------------------------------- //
 // ------------------------------------------------------------------------- //
 
-  this.save = function(resultFn){
-    var sql = generateUpsertSql();
+  var processQuery = function(text, vars, resultFn){
     var rows = [];
 
-    db.query(sql.text, sql.usrVals,
+    db.query(text, vars,
       function(err){
         resultFn(err);
       },
@@ -72,6 +76,15 @@ var Model = function(table, data){
       function(res){
         resultFn(null, rows);
       });
+  };
+
+// ------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------- //
+
+  this.save = function(resultFn){
+    var sql = generateUpsertSql();
+    processQuery(sql.text, sql.usrVals, resultFn);
   };
 
 // ------------------------------------------------------------------------- //
@@ -80,18 +93,7 @@ var Model = function(table, data){
 
   this.find = function(num, resultFn){
     var sql = generateSelectSql(num);
-    var rows = [];
-
-    db.query(sql, [],
-      function(err){
-        resultFn(err);
-      },
-      function(row, res){
-        rows.push(row);
-      },
-      function(res){
-        resultFn(null, rows);
-      });
+    processQuery(sql, [], resultFn);
   };
 
 // ------------------------------------------------------------------------- //
@@ -100,18 +102,7 @@ var Model = function(table, data){
 
   this.destroy = function(resultFn){
     var sql = generateDeleteSql();
-    var rows = [];
-
-    db.query(sql, [],
-      function(err){
-        resultFn(err);
-      },
-      function(row, res){
-        rows.push(row);
-      },
-      function(res){
-        resultFn(null, rows);
-      });
+    processQuery(sql, [], resultFn);
   };
 };
 

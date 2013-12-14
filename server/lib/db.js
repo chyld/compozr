@@ -28,7 +28,7 @@ Db.prototype.createPool = function(connectionString, num){
         } else {
           console.info('Postgres listening : %d', client.processID);
           db.pool.push({client:client, isActive:false});
-          if(db.pool.length === num) db.emit('pool');
+          if(db.pool.length === num) db.emit('pool-ready');
         }
       });
     })(new pg.Client(connectionString));
@@ -48,6 +48,10 @@ Db.prototype.cacheSchema = function(){
     (function(table){
       db.getColumns(table, function(columns){
         db.schemas[table] = columns;
+        console.log('--------------------------------------');
+        console.log(tables.length);
+        console.log(db.schemas);
+        if(Object.keys(db.schemas).length === tables.length) db.emit('schema-ready');
       });
     })(tables[i]);
 

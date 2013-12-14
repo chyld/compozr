@@ -7,16 +7,19 @@
   },
   "dependencies": {
     "express": "*",
-    "lodash": "*",
-    "async": "*",
-    "pg": "*"
+    "lodash" : "*",
+    "async"  : "*",
+    "pg"     : "*"
   },
   "devDependencies": {
-    "grunt": "*",
-    "grunt-contrib-watch": "*",
+    "grunt"               : "*",
+    "grunt-contrib-watch" : "*",
     "grunt-contrib-jshint": "*",
-    "jshint-stylish": "*",
-    "load-grunt-tasks": "*",
-    "time-grunt": "*"
+    "jshint-stylish"      : "*",
+    "load-grunt-tasks"    : "*",
+    "time-grunt"          : "*",
+    "mocha"               : "*",
+    "should"              : "*",
+    "supertest"           : "*"
   }
 }
